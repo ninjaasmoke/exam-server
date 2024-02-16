@@ -51,5 +51,12 @@ func main() {
 		c.JSON(200, gin.H{"message": "Access granted", "role": role})
 	})
 
+	// Admin routes
+	adminGroup := r.Group("/admin")
+	adminGroup.Use(middlewares.IsAuthorized(), middlewares.IsAdmin())
+	adminGroup.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{"message": "Access granted for admin"})
+	})
+
 	r.Run(":8080")
 }
