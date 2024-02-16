@@ -96,7 +96,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	user.Role = "student"
+	user.Role = "admin"
 
 	if err := models.DB.Create(&user).Error; err != nil {
 		fmt.Println(err)
