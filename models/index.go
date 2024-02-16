@@ -22,7 +22,7 @@ func InitDB(cfg Config) {
 
 	// dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s", cfg.Host, cfg.User, cfg.Password, cfg.DBName, cfg.Port, cfg.SSLMode)
 
-	// db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
+	// db, err := gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{})
 	db, err := gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 	if err != nil {
 		panic(err)
