@@ -96,7 +96,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	user.Role = "admin"
+	user.Role = 0
 
 	if err := models.DB.Create(&user).Error; err != nil {
 		fmt.Println(err)
@@ -123,7 +123,7 @@ func Home(c *gin.Context) {
 		return
 	}
 
-	if claims.Role != "user" && claims.Role != "admin" {
+	if claims.Role < 1 {
 		c.JSON(401, gin.H{"error": "unauthorized"})
 		return
 	}
