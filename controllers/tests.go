@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"exam-server/models"
 	"net/http"
 
@@ -21,7 +22,7 @@ func CreateQuestion(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": question, "message": "Question created successfully"})
 }
 
-func Createquestions(c *gin.Context) {
+func CreateQuestions(c *gin.Context) {
 	var questions []models.Question
 	if err := c.ShouldBindJSON(&questions); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
@@ -81,32 +82,86 @@ func DeleteQuestion(c *gin.Context) {
 func CreateTest(c *gin.Context) {
 	var test models.Test
 	if err := c.ShouldBindJSON(&test); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if len(test.QuestionIDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Question IDs are required"})
+		return
+	}
+
+	var questions []models.Question
+	if err := models.DB.Find(&questions, test.QuestionIDs).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	test.Questions = questions
+
 	if err := models.DB.Create(&test).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "data": err})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, gin.H{"data": test, "message": "Test created successfully"})
 }
 
 func GetTests(c *gin.Context) {
 	var tests []models.Test
-	if err := models.DB.Find(&tests).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!", "data": err})
+	if err := models.DB.Preload("Questions").Find(&tests).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "No tests found", "data": err})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error", "data": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": tests})
+
+	var testResponses []models.TestResponse
+	for _, test := range tests {
+		testResponses = append(testResponses, models.TestResponse{
+			Model:        test.Model,
+			Name:         test.Name,
+			Subject:      test.Subject,
+			Chapter:      test.Chapter,
+			Level:        test.Level,
+			Questions:    test.Questions,
+			TotalMarks:   test.TotalMarks,
+			TotalTime:    test.TotalTime,
+			Instructions: test.Instructions,
+			Deleted:      test.Deleted,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": testResponses})
 }
 
 func GetTest(c *gin.Context) {
 	var test models.Test
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&test).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!", "data": err})
+	if err := models.DB.Preload("Questions").Where("id = ?", c.Param("id")).First(&test).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Test not found", "data": err})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error", "data": err})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": test})
+
+	testResponse := models.TestResponse{
+		Model:        test.Model,
+		Name:         test.Name,
+		Subject:      test.Subject,
+		Chapter:      test.Chapter,
+		Level:        test.Level,
+		Questions:    test.Questions,
+		TotalMarks:   test.TotalMarks,
+		TotalTime:    test.TotalTime,
+		Instructions: test.Instructions,
+		Deleted:      test.Deleted,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": testResponse})
 }
 
 func UpdateTest(c *gin.Context) {
