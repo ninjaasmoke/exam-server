@@ -48,7 +48,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(480 * time.Hour)
 
 	claims := &models.Claims{
 		Role: existingUser.Role,
