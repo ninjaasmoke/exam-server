@@ -8,6 +8,6 @@ type User struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	UserName string `json:"username" gorm:"column:username"`
-	Role     string `json:"role"`
+	Role     uint   `json:"role"`
 	Deleted  bool   `json:"deleted"`
 }
