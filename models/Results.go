@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-// results of a uesr for each test
+// results of a user for each test
 
 type Result struct {
 	gorm.Model
