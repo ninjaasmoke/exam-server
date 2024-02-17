@@ -14,7 +14,7 @@ func IsAdmin() gin.HandlerFunc {
 			return
 		}
 
-		if roleInt, ok := role.(int); ok && roleInt <= 2 {
+		if roleInt, ok := role.(uint); !(ok && roleInt >= 2) {
 			c.JSON(401, gin.H{"error": "unauthorized", "data": "user is not an admin"})
 			c.Abort()
 			return
