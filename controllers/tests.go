@@ -67,11 +67,14 @@ func CreateTest(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
 		return
 	}
-	models.DB.Create(&test)
+	if err := models.DB.Create(&test).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": test, "message": "Test created successfully"})
 }
 
-func GetAllTests(c *gin.Context) {
+func GetTests(c *gin.Context) {
 	var tests []models.Test
 	if err := models.DB.Find(&tests).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
@@ -99,7 +102,10 @@ func UpdateTest(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
 		return
 	}
-	models.DB.Save(&test)
+	if err := models.DB.Save(&test).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": test, "message": "Test updated successfully"})
 }
 
@@ -110,7 +116,10 @@ func DeleteTest(c *gin.Context) {
 		return
 	}
 	// soft delete
-	models.DB.Save(&models.Test{Model: gorm.Model{ID: test.ID}, Deleted: true})
+	if err := models.DB.Save(&models.Test{Model: gorm.Model{ID: test.ID}, Deleted: true}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": test, "message": "Test deleted successfully"})
 }
 
@@ -120,8 +129,26 @@ func CreateResponse(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
 		return
 	}
-	models.DB.Create(&response)
+	if err := models.DB.Create(&response).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": response, "message": "Response created successfully"})
+}
+
+func CreateResponses(c *gin.Context) {
+	var responses []models.Response
+	if err := c.ShouldBindJSON(&responses); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
+		return
+	}
+
+	if err := models.DB.Create(&responses).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": responses, "message": "Responses created successfully"})
 }
 
 func GetAllResponses(c *gin.Context) {
@@ -142,7 +169,7 @@ func GetResponse(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": response})
 }
 
-func GetResponsePerTest(c *gin.Context) {
+func GetResponsesPerTest(c *gin.Context) {
 	var responses []models.Response
 	if err := models.DB.Where("test_id = ?", c.Param("id")).Find(&responses).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
@@ -171,7 +198,7 @@ func GetResponsePerUserPerTest(c *gin.Context) {
 
 func GetResultsPerUser(c *gin.Context) {
 	var results []models.Result
-	if err := models.DB.Where("user_id = ?", c.Param("id")).Find(&results).Error; err != nil {
+	if err := models.DB.Where("user_id = ?", c.Param("user_id")).Find(&results).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
 		return
 	}
