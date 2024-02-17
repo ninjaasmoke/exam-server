@@ -11,4 +11,5 @@ type Response struct {
 	TestID     uint   `json:"test_id"`
 	QuestionID uint   `json:"question_id"`
 	Response   string `json:"response"`
+	Deleted    bool   `json:"deleted"`
 }

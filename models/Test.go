@@ -15,4 +15,5 @@ type Test struct {
 	TotalMarks   int        `json:"total_marks"`
 	TotalTime    int        `json:"total_time"`
 	Instructions string     `json:"instructions"`
+	Deleted      bool       `json:"deleted"`
 }

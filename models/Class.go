@@ -9,4 +9,5 @@ type Class struct {
 	ID       uint   `json:"id" gorm:"primary_key"`
 	Name     string `json:"name"`
 	Students []User `json:"students" gorm:"many2many:class_students;"`
+	Deleted  bool   `json:"deleted"`
 }

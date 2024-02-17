@@ -10,4 +10,5 @@ type User struct {
 	Password string `json:"password"`
 	UserName string `json:"username" gorm:"column:username"`
 	Role     string `json:"role"`
+	Deleted  bool   `json:"deleted"`
 }

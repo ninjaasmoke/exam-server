@@ -18,4 +18,5 @@ type Question struct {
 	Subject  string `json:"subject"`
 	Chapter  string `json:"chapter"`
 	Level    string `json:"level"`
+	Deleted  bool   `json:"deleted"`
 }
