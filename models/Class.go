@@ -6,7 +6,6 @@ import "gorm.io/gorm"
 
 type Class struct {
 	gorm.Model
-	ID       uint   `json:"id" gorm:"primary_key"`
 	Name     string `json:"name"`
 	Students []User `json:"students" gorm:"many2many:class_students;"`
 	Deleted  bool   `json:"deleted"`

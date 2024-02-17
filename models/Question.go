@@ -6,7 +6,6 @@ import "gorm.io/gorm"
 
 type Question struct {
 	gorm.Model
-	ID       uint   `json:"id" gorm:"primary_key"`
 	Question string `json:"question"`
 	Option1  string `json:"option1"`
 	Option2  string `json:"option2"`

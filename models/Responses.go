@@ -6,7 +6,6 @@ import "gorm.io/gorm"
 
 type Response struct {
 	gorm.Model
-	ID         uint   `json:"id" gorm:"primary_key"`
 	UserID     uint   `json:"user_id"`
 	TestID     uint   `json:"test_id"`
 	QuestionID uint   `json:"question_id"`
