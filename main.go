@@ -35,8 +35,8 @@ func main() {
 	models.InitDB(config)
 
 	// Load the routes
-	routes.AuthRoutes(r)
 	routes.PingRoutes(r)
+	routes.AuthRoutes(r)
 
 	// Authorized routes
 	authorizedGroup := r.Group("/protected")
@@ -51,12 +51,15 @@ func main() {
 		c.JSON(200, gin.H{"message": "Access granted", "role": role})
 	})
 
+	// Student routes
+	studentGroup := r.Group("/student")
+	studentGroup.Use(middlewares.IsAuthorized(), middlewares.IsStudent())
+	routes.StudentRoutes(studentGroup)
+
 	// Admin routes
 	adminGroup := r.Group("/admin")
 	adminGroup.Use(middlewares.IsAuthorized(), middlewares.IsAdmin())
-	adminGroup.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{"message": "Access granted for admin"})
-	})
+	routes.AdminRoutes(adminGroup)
 
-	r.Run(":8080")
+	r.Run("127.0.0.1:8080")
 }
