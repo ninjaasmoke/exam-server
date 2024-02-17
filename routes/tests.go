@@ -31,6 +31,7 @@ func AdminRoutes(route *gin.RouterGroup) {
 	route.GET("/questions", controllers.GetQuestions)
 	route.GET("/question/:id", controllers.GetQuestion)
 	route.POST("/question", controllers.CreateQuestion)
+	route.POST("/questions", controllers.CreateQuestions)
 	route.PUT("/question/:id", controllers.UpdateQuestion)
 	route.DELETE("/question/:id", controllers.DeleteQuestion)
 }
