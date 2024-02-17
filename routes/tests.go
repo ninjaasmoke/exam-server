@@ -28,4 +28,9 @@ func AdminRoutes(route *gin.RouterGroup) {
 	route.GET("/users", controllers.GetUsers)
 	route.GET("/user/:id", controllers.GetUser)
 	route.GET("/response/:id", controllers.GetResponse)
+	route.GET("/questions", controllers.GetQuestions)
+	route.GET("/question/:id", controllers.GetQuestion)
+	route.POST("/question", controllers.CreateQuestion)
+	route.PUT("/question/:id", controllers.UpdateQuestion)
+	route.DELETE("/question/:id", controllers.DeleteQuestion)
 }
