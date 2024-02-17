@@ -20,7 +20,10 @@ func CreateQuestion(c *gin.Context) {
 
 func GetAllQuestions(c *gin.Context) {
 	var questions []models.Question
-	models.DB.Find(&questions)
+	if err := models.DB.Find(&questions).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": questions})
 }
 
@@ -70,7 +73,10 @@ func CreateTest(c *gin.Context) {
 
 func GetAllTests(c *gin.Context) {
 	var tests []models.Test
-	models.DB.Find(&tests)
+	if err := models.DB.Find(&tests).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": tests})
 }
 
@@ -120,7 +126,10 @@ func CreateResponse(c *gin.Context) {
 
 func GetAllResponses(c *gin.Context) {
 	var responses []models.Response
-	models.DB.Find(&responses)
+	if err := models.DB.Find(&responses).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
 	c.JSON(http.StatusOK, gin.H{"data": responses})
 }
 
@@ -158,4 +167,22 @@ func GetResponsePerUserPerTest(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": responses})
+}
+
+func GetResultsPerUser(c *gin.Context) {
+	var results []models.Result
+	if err := models.DB.Where("user_id = ?", c.Param("id")).Find(&results).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": results})
+}
+
+func GetResultsPerTest(c *gin.Context) {
+	var results []models.Result
+	if err := models.DB.Where("test_id = ?", c.Param("id")).Find(&results).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"data": results})
 }
