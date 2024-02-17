@@ -16,7 +16,7 @@ func IsStudent() gin.HandlerFunc {
 			return
 		}
 
-		if roleInt, ok := role.(int); ok && roleInt <= 1 {
+		if roleInt, ok := role.(uint); !(ok && roleInt >= 1) {
 			c.JSON(401, gin.H{"error": "unauthorized", "data": "user is not a student"})
 			c.Abort()
 			return
