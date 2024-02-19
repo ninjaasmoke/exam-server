@@ -18,4 +18,5 @@ type Test struct {
 	TotalTime    int        `json:"total_time"`
 	Instructions string     `json:"instructions"`
 	Deleted      bool       `json:"deleted"`
+	Responses    []Response `gorm:"foreignKey:TestID"`
 }
