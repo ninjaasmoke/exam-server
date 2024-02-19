@@ -8,10 +8,14 @@ import (
 	"exam-server/routes"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
+
+const maxRetries = 5
+const retryInterval = 5 * time.Second // Adjust the retry interval as needed
 
 func main() {
 	// Create a new gin instance
@@ -32,7 +36,20 @@ func main() {
 	}
 
 	// Initialize DB
-	models.InitDB(config)
+
+	for i := 0; i < maxRetries; i++ {
+		err := models.InitDB(config)
+		if err != nil {
+			log.Printf("Failed to connect to the database. Retrying in %s...", retryInterval)
+			time.Sleep(retryInterval)
+		} else {
+			break
+		}
+	}
+
+	if err != nil {
+		log.Fatalf("Failed to initialize the database after %d attempts. Exiting.", maxRetries)
+	}
 
 	// Load the routes
 	routes.PingRoutes(r)
