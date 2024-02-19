@@ -8,6 +8,7 @@ import (
 
 type Test struct {
 	gorm.Model
+	TestID       uint       `json:"test_id" gorm:"primaryKey"`
 	Name         string     `json:"name" gorm:"not null"`
 	Subject      string     `json:"subject"`
 	Chapter      string     `json:"chapter"`
