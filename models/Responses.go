@@ -6,9 +6,9 @@ import "gorm.io/gorm"
 
 type Response struct {
 	gorm.Model
-	UserID     uint   `json:"user_id"`
-	TestID     uint   `json:"test_id"`
-	QuestionID uint   `json:"question_id"`
+	UserID     uint   `json:"user_id" gorm:"non null;uniqueIndex:unique_response;foreignKey:UserID"`
+	TestID     uint   `json:"test_id" gorm:"non null;uniqueIndex:unique_response;foreignKey:TestID"`
+	QuestionID uint   `json:"question_id" gorm:"non null;uniqueIndex:unique_response";foreignKey:QuestionID`
 	Response   string `json:"response"`
 	Deleted    bool   `json:"deleted"`
 }
