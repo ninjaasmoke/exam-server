@@ -3,6 +3,7 @@ package controllers
 import (
 	"errors"
 	"exam-server/models"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -197,10 +198,28 @@ func DeleteTest(c *gin.Context) {
 
 func CreateResponse(c *gin.Context) {
 	var response models.Response
+	claims, exists := c.Get("claims")
+
+	fmt.Println(claims)
+	fmt.Println(exists)
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized", "data": exists})
+		return
+	}
+
+	userID := claims.(*models.Claims).UserID
+
 	if err := c.ShouldBindJSON(&response); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
 		return
 	}
+
+	if response.UserID != userID {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
 	if err := models.DB.Create(&response).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "data": err})
 		return
@@ -210,9 +229,25 @@ func CreateResponse(c *gin.Context) {
 
 func CreateResponses(c *gin.Context) {
 	var responses []models.Response
+	claims, exists := c.Get("claims")
+
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	userID := claims.(*models.Claims).UserID
+
 	if err := c.ShouldBindJSON(&responses); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
 		return
+	}
+
+	for _, response := range responses {
+		if response.UserID != userID {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			return
+		}
 	}
 
 	if err := models.DB.Create(&responses).Error; err != nil {
