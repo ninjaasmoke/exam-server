@@ -51,7 +51,9 @@ func Login(c *gin.Context) {
 	expirationTime := time.Now().Add(480 * time.Hour)
 
 	claims := &models.Claims{
-		Role: existingUser.Role,
+		Role:     existingUser.Role,
+		UserID:   existingUser.ID,
+		UserName: existingUser.UserName,
 		StandardClaims: jwt.StandardClaims{
 			Subject:   existingUser.Email,
 			ExpiresAt: expirationTime.Unix(),
@@ -68,7 +70,7 @@ func Login(c *gin.Context) {
 	}
 
 	c.SetCookie("token", tokenString, int(expirationTime.Unix()), "/", "localhost", false, true)
-	c.JSON(200, gin.H{"success": "user logged in"})
+	c.JSON(200, gin.H{"success": "user logged in", "token": tokenString, "role": existingUser.Role, "username": existingUser.UserName, "email": existingUser.Email, "id": existingUser.ID})
 }
 
 func Register(c *gin.Context) {
