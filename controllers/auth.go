@@ -4,7 +4,6 @@ package controllers
 
 import (
 	"exam-server/models"
-	"fmt"
 	"os"
 	"time"
 
@@ -13,9 +12,6 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
-
-// The string "my_secret_key" is just an example and should be replaced with a secret key of sufficient length and complexity in a real-world scenario.
-var jwtKey = []byte(os.Getenv("JWT_KEY"))
 
 func Login(c *gin.Context) {
 
@@ -33,9 +29,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	models.DB.Where("username = ?", user.UserName).First(&existingUser)
-
-	fmt.Println(existingUser.Email, existingUser.Password, existingUser.Role)
+	if err := models.DB.Where("username = ?", user.UserName).First(&existingUser).Error; err != nil {
+		c.JSON(400, gin.H{"error": "user does not exist", "data": err.Error()})
+		return
+	}
 
 	if existingUser.ID == 0 {
 		c.JSON(400, gin.H{"error": "user does not exist"})
@@ -62,6 +59,8 @@ func Login(c *gin.Context) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	var jwtKey = []byte(os.Getenv("JWT_KEY"))
 
 	tokenString, err := token.SignedString(jwtKey)
 
@@ -102,7 +101,6 @@ func Register(c *gin.Context) {
 	user.Role = 0
 
 	if err := models.DB.Create(&user).Error; err != nil {
-		fmt.Println(err)
 		c.JSON(500, gin.H{"error": "could not create user", "data": err.Error()})
 		return
 	}
