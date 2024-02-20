@@ -3,7 +3,6 @@ package controllers
 import (
 	"errors"
 	"exam-server/models"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -199,9 +198,6 @@ func DeleteTest(c *gin.Context) {
 func CreateResponse(c *gin.Context) {
 	var response models.Response
 	claims, exists := c.Get("claims")
-
-	fmt.Println(claims)
-	fmt.Println(exists)
 
 	if !exists {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized", "data": exists})
