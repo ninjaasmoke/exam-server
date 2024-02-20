@@ -59,13 +59,13 @@ func main() {
 	authorizedGroup := r.Group("/protected")
 	authorizedGroup.Use(middlewares.IsAuthorized())
 	authorizedGroup.GET("/ping", func(c *gin.Context) {
-		role, exists := c.Get("role")
+		claims, exists := c.Get("claims")
 		if !exists {
 			c.JSON(500, gin.H{"error": "Role information not found"})
 			return
 		}
 
-		c.JSON(200, gin.H{"message": "Access granted", "role": role})
+		c.JSON(200, gin.H{"message": "Access granted", "role": claims.(*models.Claims).Role})
 	})
 
 	// Student routes
