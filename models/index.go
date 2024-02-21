@@ -39,7 +39,7 @@ func InitDB(cfg Config) error {
 		return err
 	}
 
-	if err := migrateModels(db, &User{}, &Test{}, &Question{}, &Response{}); err != nil {
+	if err := migrateModels(db, &User{}, &Test{}, &Question{}, &Response{}, &Result{}); err != nil {
 		log.Fatalf("Failed to migrate models: %v", err)
 		return err
 	}
