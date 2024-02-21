@@ -107,6 +107,35 @@ func CreateTest(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": test, "message": "Test created successfully"})
 }
 
+func UpdateTest(c *gin.Context) {
+	var test models.Test
+	if err := models.DB.Where("id = ?", c.Param("id")).First(&test).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!", "data": err})
+		return
+	}
+
+	if err := c.ShouldBindJSON(&test); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
+		return
+	}
+
+	if len(test.QuestionIDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Question IDs are required"})
+		return
+	}
+
+	var questions []models.Question
+	if err := models.DB.Find(&questions, test.QuestionIDs).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "data": err})
+		return
+	}
+
+	test.Questions = questions
+
+	models.DB.Save(&test)
+	c.JSON(http.StatusOK, gin.H{"data": test, "message": "Test updated successfully"})
+}
+
 func GetTests(c *gin.Context) {
 	var tests []models.Test
 	if err := models.DB.Preload("Questions").Find(&tests).Error; err != nil {
@@ -162,23 +191,6 @@ func GetTest(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": testResponse})
-}
-
-func UpdateTest(c *gin.Context) {
-	var test models.Test
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&test).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!", "data": err})
-		return
-	}
-	if err := c.ShouldBindJSON(&test); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(), "data": err})
-		return
-	}
-	if err := models.DB.Save(&test).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error(), "data": err})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"data": test, "message": "Test updated successfully"})
 }
 
 func DeleteTest(c *gin.Context) {
