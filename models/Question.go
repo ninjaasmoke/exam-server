@@ -6,18 +6,17 @@ import "gorm.io/gorm"
 
 type Question struct {
 	gorm.Model
-	QuestionID uint       `json:"question_id" gorm:"primaryKey"`
-	Question   string     `json:"question"`
-	Option1    string     `json:"option1"`
-	Option2    string     `json:"option2"`
-	Option3    string     `json:"option3"`
-	Option4    string     `json:"option4"`
-	Option5    string     `json:"option5"`
-	Option6    string     `json:"option6"`
-	Answer     string     `json:"answer"`
-	Subject    string     `json:"subject"`
-	Chapter    string     `json:"chapter"`
-	Level      string     `json:"level"`
-	Deleted    bool       `json:"deleted"`
-	Responses  []Response `gorm:"foreignKey:QuestionID"`
+	Question  string     `json:"question"`
+	Option1   string     `json:"option1"`
+	Option2   string     `json:"option2"`
+	Option3   string     `json:"option3"`
+	Option4   string     `json:"option4"`
+	Option5   string     `json:"option5"`
+	Option6   string     `json:"option6"`
+	Answer    string     `json:"answer"`
+	Subject   string     `json:"subject"`
+	Chapter   string     `json:"chapter"`
+	Level     string     `json:"level"`
+	Deleted   bool       `json:"deleted"`
+	Responses []Response `gorm:"foreignKey:QuestionID"`
 }
