@@ -6,6 +6,7 @@ import (
 	"exam-server/middlewares"
 	"exam-server/models"
 	"exam-server/routes"
+	"exam-server/utils"
 	"log"
 	"os"
 	"time"
@@ -65,7 +66,7 @@ func main() {
 			return
 		}
 
-		c.JSON(200, gin.H{"message": "Access granted", "role": claims.(*models.Claims).Role})
+		c.JSON(200, gin.H{"message": "Access granted", "role": utils.RoleMap(claims.(*models.Claims).Role)})
 	})
 
 	// Student routes
